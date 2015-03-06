@@ -1,9 +1,8 @@
-Ansible Deployment for HARNESS demo on grid5000
-===============================================
+Ansible Deployment for OpenStack on grid5000
+============================================
 
-The purpose of this ansible deployment is to configure and set up the HARNESS
-system on grid5000 for testing, experimentation, and demonstration. It is not
-intended for production use.
+The purpose of this ansible deployment is to configure and set up OpenStack on
+grid5000 for testing, experimentation, and demonstration. 
 
 Portions of this document are based on an existing howto for deploying vanilla
 OpenStack Grizzly (ref:
@@ -12,10 +11,10 @@ https://www.grid5000.fr/mediawiki/index.php/OpenStack_Grizzly).
 Preparation
 -----------
 
-These steps need to be completed in order to successfully deploy the HARNESS
-demonstrator platform on grid5000. This setup procedure should only need to be
-done once on the frontend (login host from which you can submit oar jobs) for
-each grid5000 site that you intend to use. 
+These steps need to be completed in order to successfully deploy OpenStack on
+grid5000. This setup procedure should only need to be done once on the frontend
+(login host from which you can submit oar jobs) for each grid5000 site that you
+intend to use. 
 
 ### Step 1: configure environment variables
 
@@ -76,15 +75,14 @@ This recommendation for managing ssh keys is consistent with the official
 grid5000 documentation (ref:
 https://www.grid5000.fr/mediawiki/index.php/SSH#SSH_key_passphrase).
 
-### Step 4: clone the ansible-deployment-harness-demo-g5k repository
+### Step 4: clone the ansible-deployment-openstack-g5k repository
 
-As the gitlab.harness-project.eu site is not accessible through the g5k proxy,
-use the github URL to clone the project:
+Clone the ansible-deployment-openstack-g5k repository to your home directory:
 
-    git clone https://github.com/harnesscloud/ansible-deployment-harness-demo-g5k.git
+    git clone https://github.com/openstack-ansible/ansible-deployment-openstack-g5k.git 
     
 To get the ansible roles used by this deployment, cd to the
-ansible-deployment-harness-demo-g5k directory and run the following command:
+ansible-deployment-openstack-g5k directory and run the following command:
 
     ansible-playbook -i inventories/demo.ini provisioning/getreqs.yml
 
@@ -105,10 +103,9 @@ so be sure to set the executable bit on this file:
 Deployment
 ----------
 
-Deploying the HARNESS platform is a multi-step process requiring first 
-requesting nodes from the job scheduler, then installing the base operating 
-system on these nodes, preparing the nodes, and finally running the ansible 
-deployment script.
+Deploying OpenStack is a multi-step process requiring first requesting nodes
+from the job scheduler, then installing the base operating system on these
+nodes, preparing the nodes, and finally running the ansible deployment script.
 
 ### Step 1: request some nodes for the deployment from the scheduler
 
@@ -147,9 +144,9 @@ The "-k" option on the end tells kadeploy to copy the contents of
 authorized_keys from your frontend account to the root account on each of your
 nodes.
 
-### Step 3: use ansible to deploy the HARNESS platform
+### Step 3: use ansible to deploy OpenStack to your nodes
 
-Change to the ansible-deployment-harness-demo-g5k directory and run the
+Change to the ansible-deployment-openstack-g5k directory and run the
 following command:
 
     ansible-playbook -i inventories/g5k.sh provisioning/deploy.yml
@@ -161,8 +158,8 @@ glance, boots a vm, and verifies connectivity:
 
     ansible-playbook -i inventories/g5k.sh provisioning/test.yml
 
-Using HARNESS on Grid5000 
--------------------------
+Using OpenStack on Grid5000 
+---------------------------
 
 As the environment within the grid5000 clusters is fairly insecure, a fair
 amount of effort has been put into isolating grid5000 from the wider internet.
