@@ -50,6 +50,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
         "compute" => ["compute-001"]
       }
       ansible.extra_vars = {
+        openstack_controller_ip: "10.1.0.2",
         openstack_network_external_device: "eth1",
         openstack_network_external_gateway: "10.1.0.3",
         openstack_horizon_url: "http://localhost:8080/horizon"
