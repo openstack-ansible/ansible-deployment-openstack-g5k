@@ -7,17 +7,6 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
 
   config.ssh.insert_key = false
 
-  config.vm.define "network" do |machine|
-    machine.vm.box = "ubuntu/trusty64"
-    machine.vm.hostname = "network"
-    machine.vm.network :private_network, ip: "10.1.0.3",
-                       :netmask => "255.255.0.0"
-    machine.vm.provider :virtualbox do |v| 
-      v.customize ["modifyvm", :id, "--memory", 1280]
-      v.customize ["modifyvm", :id, "--nicpromisc2", "allow-vms"]
-    end
-  end
-
   config.vm.define "compute-001" do |machine|
     machine.vm.box = "ubuntu/trusty64"
     machine.vm.hostname = "compute-001"
@@ -36,6 +25,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
                        :netmask => "255.255.0.0"
     machine.vm.provider :virtualbox do |v| 
       v.customize ["modifyvm", :id, "--memory", 2048]
+      v.customize ["modifyvm", :id, "--nicpromisc2", "allow-vms"]
     end
 
     machine.vm.provision "ansible" do |ansible|
@@ -46,7 +36,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
       ansible.playbook = "deploy.yml"
       ansible.groups = {
         "controller" => ["controller"],
-        "network" => ["network"],
+        "network" => ["controller"],
         "compute" => ["compute-001"]
       }
       ansible.extra_vars = {
@@ -60,6 +50,9 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
 
     machine.vm.provision "ansible" do |ansible|
       ansible.playbook = "test.yml"
+      ansible.groups = {
+        "controller" => ["controller"]
+      }
     end
 
   end
