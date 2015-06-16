@@ -5,6 +5,8 @@ VAGRANTFILE_API_VERSION = "2"
 
 Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
 
+  config.ssh.insert_key = false
+
   config.vm.define "network" do |machine|
     machine.vm.box = "ubuntu/trusty64"
     machine.vm.hostname = "network"
