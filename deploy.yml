@@ -24,3 +24,11 @@
   sudo: True
   roles:
     - nova-compute
+
+- hosts: controller
+  tasks:
+
+    - name: display horizon url
+      debug:
+        msg: "horizon url: {{ openstack_horizon_url }}"
+
