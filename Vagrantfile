@@ -37,12 +37,12 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
     end
 
     machine.vm.provision "ansible" do |ansible|
-      ansible.playbook = "provisioning/getreqs.yml"
+      ansible.playbook = "getreqs.yml"
       ansible.limit = 'all'
     end
 
     machine.vm.provision "ansible" do |ansible|
-      ansible.playbook = "provisioning/deploy.yml"
+      ansible.playbook = "deploy.yml"
       ansible.groups = {
         "controller" => ["controller"],
         "network" => ["network"],
@@ -65,7 +65,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
     end
 
     machine.vm.provision "ansible" do |ansible|
-      ansible.playbook = "provisioning/test.yml"
+      ansible.playbook = "test.yml"
       ansible.groups = {
         "controller" => ["controller"],
         "network" => ["network"],
