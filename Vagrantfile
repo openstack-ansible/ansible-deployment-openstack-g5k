@@ -43,6 +43,10 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
         openstack_controller_ip: "10.1.0.2",
         openstack_network_external_device: "eth1",
         openstack_network_external_gateway: "10.1.0.3",
+        openstack_network_local_ip: 
+          "{{ ansible_all_ipv4_addresses|ipaddr('10.1.0.0/16')|first }}",
+        openstack_compute_node_ip: 
+          "{{ ansible_all_ipv4_addresses|ipaddr('10.1.0.0/16')|first }}",
         openstack_horizon_url: "http://localhost:8080/horizon"
       }
       ansible.limit = 'all'
