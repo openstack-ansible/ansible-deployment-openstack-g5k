@@ -38,7 +38,6 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
 
     machine.vm.provision "ansible" do |ansible|
       ansible.playbook = "getreqs.yml"
-      ansible.limit = 'all'
     end
 
     machine.vm.provision "ansible" do |ansible|
@@ -49,42 +48,15 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
         "compute" => ["compute-001"]
       }
       ansible.extra_vars = {
-        openstack_controller_ip: "10.1.0.2",
-        openstack_network_ip: "10.1.0.3",
-        openstack_compute_node_ip: "{{ ansible_eth1.ipv4.address }}",
-        openstack_network_node_ip: "{{ ansible_eth1.ipv4.address }}",
         openstack_network_external_device: "eth1",
-        openstack_network_external_network: "10.1.0.0/16",
         openstack_network_external_gateway: "10.1.0.3",
-        openstack_network_external_allocation_pool_start: "10.1.0.100",
-        openstack_network_external_allocation_pool_end: "10.1.0.200",
-        openstack_network_external_dns_servers: "8.8.8.8"
- 
+        openstack_horizon_url: "http://localhost:8080/horizon"
       }
       ansible.limit = 'all'
     end
 
     machine.vm.provision "ansible" do |ansible|
       ansible.playbook = "test.yml"
-      ansible.groups = {
-        "controller" => ["controller"],
-        "network" => ["network"],
-        "compute" => ["compute-001"]
-      }
-      ansible.extra_vars = {
-        openstack_controller_ip: "10.1.0.2",
-        openstack_network_ip: "10.1.0.3",
-        openstack_compute_node_ip: "{{ ansible_eth1.ipv4.address }}",
-        openstack_network_node_ip: "{{ ansible_eth1.ipv4.address }}",
-        openstack_network_external_device: "eth1",
-        openstack_network_external_network: "10.1.0.0/16",
-        openstack_network_external_gateway: "10.1.0.3",
-        openstack_network_external_allocation_pool_start: "10.1.0.100",
-        openstack_network_external_allocation_pool_end: "10.1.0.200",
-        openstack_network_external_dns_servers: "8.8.8.8"
- 
-      }
-      ansible.limit = 'all'
     end
 
   end

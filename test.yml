@@ -2,7 +2,8 @@
 - hosts: controller
   sudo: False
   vars:
-    cirros_url: http://cdn.download.cirros-cloud.net/0.3.3/cirros-0.3.3-x86_64-disk.img
+    cirros_url: 
+      http://download.cirros-cloud.net/0.3.4/cirros-0.3.4-x86_64-disk.img
     openstack_identity_demo_password: password
   tasks:
 
