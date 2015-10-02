@@ -8,3 +8,16 @@ openstack_identity_endpoint_host: "{{ openstack_controller_ip }}"
 openstack_image_endpoint_host: "{{ openstack_controller_ip }}"
 openstack_compute_endpoint_host: "{{ openstack_controller_ip }}"
 openstack_network_endpoint_host: "{{ openstack_controller_ip }}"
+
+openstack_http_proxy_environment:
+    http_proxy: "{{ lookup('env', 'http_proxy') }}"
+    https_proxy: "{{ lookup('env', 'https_proxy') }}"
+
+
+openstack_no_http_proxy_environment:
+    http_proxy: ''
+    HTTP_PROXY: ''
+    https_proxy: ''
+    HTTPS_PROXY: ''
+
+

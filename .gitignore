@@ -1,5 +1,8 @@
 .*.swp
 .vagrant
 private
-library
-roles
+library/*
+!library/docker.py
+!library/docker_image.py
+roles/*
+harness/*

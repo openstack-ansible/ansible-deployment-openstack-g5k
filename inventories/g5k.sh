@@ -1,13 +1,14 @@
 #!/bin/bash
 
-if [ "$1" = "--host" ] || [ -z "$OAR_NODE_FILE" ]; then
+if [ "$1" = "--host" ]; then
     echo "{}"
     exit 0
 fi
 
-nodes=($(sort -uV $OAR_NODE_FILE))
+[ -n "$OAR_NODE_FILE" ] && nodes=($(sort -uV $OAR_NODE_FILE))
+[ -f "harness-nodes.txt" ] && nodes=($(cat harness-nodes.txt))
 
-if [ ${#nodes[@]} -lt 2 ]; then
+if [ -z "$nodes" ] || [ ${#nodes[@]} -lt 2 ]; then
     echo "{}"
     exit 0
 fi

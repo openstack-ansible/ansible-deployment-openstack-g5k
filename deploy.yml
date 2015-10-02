@@ -30,5 +30,4 @@
 
     - name: display horizon url
       debug:
-        msg: "horizon url: {{ openstack_horizon_url }}"
-
+        msg: "horizon url: http://{{ openstack_controller_ip }}"

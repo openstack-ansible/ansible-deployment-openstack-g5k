@@ -8,17 +8,18 @@
       delegate_to: localhost
       connection: local
       git:
-        repo: https://github.com/openstack-ansible/ansible-role-{{ item }}.git
+        repo: "{{ openstack_repository_prefix }}ansible-role-{{ item }}.git"
         dest: roles/{{ item }}
         update: yes
       with_items:
         - chrony
+        - docker
         - mysql
         - rabbitmq-server
         - keystone
         - glance
         - nova-controller
-        - nova-compute
+        - nova-compute-docker
         - neutron-controller
         - neutron-network
         - horizon
@@ -26,6 +27,14 @@
     - name: check out library needed for demo deployment from github.com
       git:
         repo:
-          'https://github.com/openstack-ansible/openstack-ansible-modules.git'
+          '{{ openstack_repository_prefix }}openstack-ansible-modules.git'
         dest: library/openstack-ansible-modules
         update: yes
+
+    - name: clone docker image repositories to local system
+      git:
+        repo: "{{ item.repo }}"
+        version: "{{ item.version }}"
+        dest: harness/{{ item.dir }}
+        update: no
+      with_items: harness_docker_build_images

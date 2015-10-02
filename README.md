@@ -2,11 +2,23 @@ Ansible Deployment for OpenStack on grid5000
 ============================================
 
 The purpose of this ansible deployment is to configure and set up OpenStack on
-grid5000 for testing, experimentation, and demonstration. 
+various target platforms, including vagrant-provisioned virtual machines and
+Grid'5000 for testing, experimentation, and demonstration.
 
-Portions of this document are based on an existing howto for deploying vanilla
-OpenStack Grizzly (ref:
-https://www.grid5000.fr/mediawiki/index.php/OpenStack_Grizzly).
+In order to try out OpenStack within a virtual machine, you need to have Git,
+VirtualBox, Vagrant, Ansible, and the python netaddr library set up and
+functioning correcly on your computer. If these preconditions are met, then you
+should be able to simply check out this project, cd into the root directory,
+and run the command "vagrant up". 
+
+More detailed instructions are provided for deploying OpenStack on to
+Grid'5000. Portions of this document are based on an existing howto for
+deploying vanilla OpenStack Grizzly (ref:
+https://www.Grid'5000.fr/mediawiki/index.php/OpenStack_Grizzly).
+
+You should make sure that you have reviewed the Grid'5000 getting started guide
+(ref: https://www.Grid'5000.fr/mediawiki/index.php/Getting_Started) before
+proceeding if you have not previously worked with Grid'5000.
 
 Preparation
 -----------
@@ -18,7 +30,7 @@ intend to use.
 
 ### Step 1: configure environment variables
 
-On Grid5000 nodes do not have direct access to the outside network, so it is
+On Grid'5000 nodes do not have direct access to the outside network, so it is
 necessary to set the http_proxy and https_proxy environment variables to the
 value "http://proxy:3128". Also, you will need to install ansible to your local
 account, so ~/.local/bin needs to be in the path. The easiest thing is to do is
@@ -34,7 +46,7 @@ Assuming that you have completed step 1 correctly and reloaded your environment
 (source ~/.profile or logout and then log in again), you should be able to
 install ansible to your home directory with the following command:
 
-    easy_install --user ansible
+    easy_install --user ansible netaddr
 
 After this step is completed make sure that you can run ansible:
 
@@ -44,7 +56,7 @@ After this step is completed make sure that you can run ansible:
 
 The secure shell has a number of features that are important for security in
 a real-world distributed environment, but that unfortunately make things a bit
-difficult on grid5000. To make life easier we need to disable them.
+difficult on Grid'5000. To make life easier we need to disable them.
 
 The first thing we need to do is to disable host-key checking. Since each node
 will have it's operating system refreshed every time the operating system is
@@ -54,8 +66,8 @@ feature, edit ~/.ssh/config and make sure the following settings are in place
 (they may already be present):
 
     Host *
-      StrictHostKeyChecking no
-      HashKnownHosts no
+    StrictHostKeyChecking no
+    HashKnownHosts no
 
 The second thing we need to do is make sure that you can ssh from the frontend 
 to the nodes granted to you by oar without entering a password. To do this, 
@@ -68,12 +80,12 @@ To make sure that the key will be propagated to your nodes run:
 
     cat ~/.ssh/id_rsa.pub >> ~/.ssh/authorized_keys
 
-It is important that this insecure key *only* be used on grid5000, for the
+It is important that this insecure key *only* be used on Grid'5000, for the
 purpose of accessing temporarily assigned nodes from the frontend.
 
 This recommendation for managing ssh keys is consistent with the official
-grid5000 documentation (ref:
-https://www.grid5000.fr/mediawiki/index.php/SSH#SSH_key_passphrase).
+Grid'5000 documentation (ref:
+https://www.Grid'5000.fr/mediawiki/index.php/SSH#SSH_key_passphrase).
 
 ### Step 4: clone the ansible-deployment-openstack-g5k repository
 
@@ -84,7 +96,7 @@ Clone the ansible-deployment-openstack-g5k repository to your home directory:
 To get the ansible roles used by this deployment, cd to the
 ansible-deployment-openstack-g5k directory and run the following command:
 
-    ansible-playbook -i inventories/demo.ini provisioning/getreqs.yml
+    ansible-playbook -i inventories/local.ini getreqs.yml
 
 Note that this step results in the current version of the deployment being
 installed to your account. To update your deployment it may be necessary to
@@ -98,20 +110,32 @@ so be sure to set the executable bit on this file:
 
     chmod +x inventories/g5k.sh
 
-
-
 Deployment
 ----------
 
 Deploying OpenStack is a multi-step process requiring first requesting nodes
 from the job scheduler, then installing the base operating system on these
-nodes, preparing the nodes, and finally running the ansible deployment script.
+nodes, preparing the nodes, and finally running the ansible deployment playbook.
 
-### Step 1: request some nodes for the deployment from the scheduler
+### Step 0 (optional): start gnu screen to protect your session
+
+These instructions are oriented toward an interactive session, so if you follow
+the instructions in the next section and then need to disconnect for some
+reason (e.g., network outage, or you need to shut down your laptop) then you
+will lose your session, the nodes will be unreserved, and you will have to
+start over again from step 1. To protect against this, run the "screen" command
+to protect your session. If you are ever disconnected then just log back in to
+your Grid'5000 site and run "screen -R" to reconnect. You should see that
+everything has continued running as though you never left. If you want to to
+disconnect without terminating your session or closing your terminal
+application, then just type "CTRL-a d" (control+a and then d) to disconnect,
+then exit or logout as you would normally. 
+
+### Step 1: request nodes for the deployment from the scheduler
 
 The OAR scheduler is complicated, and the oarsub command can take a lot of
 options depending on exactly what you want (ref:
-https://www.grid5000.fr/mediawiki/index.php/Advanced_OAR). In it's most basic
+https://www.Grid'5000.fr/mediawiki/index.php/Advanced_OAR). In it's most basic
 form you will need to run something like:
 
     oarsub -t deploy -I -l slash_22=1+cluster=1/nodes=3,walltime=4:00:00
@@ -126,11 +150,11 @@ reservation*. Thus, all subsequent commands should be run from the same
 session/login as the oarsub command, and you should not exit this session until
 you are done with your reservation. The final option gives some information
 about what you want to reserve, in this case 3 nodes, all on the same cluster,
-with a /22 subnet, for 4 hours. It is very important to follow the grid5000
-[user guidelines](https://www.grid5000.fr/mediawiki/index.php/Grid5000:UserCharter)
-for acceptable usage when deciding on a number of nodes and for how long you
-want the reservation.
-
+with a /22 subnet, for 4 hours. It is very important to follow the Grid'5000
+user guidelines (ref:
+https://www.Grid'5000.fr/mediawiki/index.php/Grid'5000:UserCharter) for
+acceptable usage when deciding on a number of nodes and for how long you want
+the reservation.
 
 ### Step 2: install ubuntu 14 on to your reserved nodes
 
@@ -149,57 +173,54 @@ nodes.
 Change to the ansible-deployment-openstack-g5k directory and run the
 following command:
 
-    ansible-playbook -i inventories/g5k.sh provisioning/deploy.yml
-
-### Step 4: set up the demo environment and run automated tests
-
-The following command creates the demo network, installs the cirros image to
-glance, boots a vm, and verifies connectivity:
-
-    ansible-playbook -i inventories/g5k.sh provisioning/test.yml
+    ansible-playbook -i inventories/g5k.sh deploy.yml
 
 Using OpenStack on Grid5000 
 ---------------------------
 
-As the environment within the grid5000 clusters is fairly insecure, a fair
-amount of effort has been put into isolating grid5000 from the wider internet.
-This means, for example, that nodes cannot directly access or be accessed from
-outside. Obviously, it should be possible to ssh to the root account of any
-node from the frontend machine. In order to access web services running on the
-nodes you may need to tunnel traffic over ssh.
-
-For any node running a web server; a service running on port 80 can be accessed
-through a URL that follows this scheme:
-
-    https://mynode.mysite.proxy-http.grid5000.fr/
-
-Services running with SSL on port 443 can be accessed more directly:
-
-    https://mynode.mysite.grid5000.fr/
+As the environment within the Grid'5000 clusters is fairly insecure, some effort
+has been put into isolating Grid'5000 from the wider internet. This means, for
+example, that nodes cannot directly access or be accessed from outside.
+Obviously, it should be possible to ssh to the root account of any node from
+the frontend machine. 
 
 If, while on a node, you need to download something from the internet, do not
 forget that you may need to set the http_proxy or https_proxy environment
 variables to do so, and that even then the most straightforward thing to do
 might be to use scp to copy your files to the frontend and then again to copy
 from the frontend to the nodes. *It is important to not set this variable by
-default on the controller as it can break some of the command-line clients*. In
-particular, setting the http_proxy environment variable will cause the neutron
-command to fail with a 403 error, while keystone, glance, and nova are not
-affected.
+default on the controller as it can break some of the openstack command-line
+clients*. The affected commands will fail with a 503 error, so if you see this
+error, be sure to check the http_proxy and HTTP_PROXY environment variables.
 
 You can also use easy_install or pip to install the command lines to your home 
 directory on the frontend machine, download the admin or demo .openrc files and 
 run commands from the front end. Don't forget to disable the http_proxy 
 environment variable if you need to use the neutron command.
 
+If you need to interact with your VMs or services from outside of Grid'5000 then
+you will first need to set up your local ssh configuration to use the
+ProxyCommand directive as described here on the G5K wiki (ref:
+https://www.Grid'5000.fr/mediawiki/index.php/SSH).
+
+Once this is set up correctly so that you can access a site by typing "ssh
+site.g5k" from the command line, you will be able to set up SOCKS proxy tunnels
+using the command "ssh -D PORT site.g5k". For example:
+
+    ssh -D 9999 rennes.g5k
+
+Once this is done you can go into your the network settings for your web
+browser and configure it to use a SOCKS proxy. In firefox for this example you
+would go to "Preferences", then "Advanced", then "Network" and click the
+"Settings" button in the Connection section. Then fill out SOCKS host as
+"localhost" and port as "9999". It is important to note that all network
+traffic for the web browser will now be sent through Grid'5000, and thus you
+should put any servers that you want to be able to connect to that are located
+outside of Grid'5000 in the "No proxy for:" box. 
+
 Author Information
 ------------------
 
+Mark Stillwell <mark@stillwell.me>
 http://stillwell.me
 
-Todo
-----
-
-- setting up tunnels with ssh...
-- kavlan network isolation?
-- kernel updates on nodes?
