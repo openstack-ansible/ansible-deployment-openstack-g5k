@@ -47,9 +47,6 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
     m.vm.hostname = "controller"
     m.vm.network :private_network, ip: "10.1.0.2", :netmask => "255.255.0.0"
     m.vm.network :forwarded_port, guest: 80, host: 8080 
-    m.vm.network :forwarded_port, guest: 443, host: 8443 
-    m.vm.network :forwarded_port, guest: 8888, host: 8888 
-    m.vm.network :forwarded_port, guest: 56789, host: 56789
 
     m.vm.provider :virtualbox do |v|
       v.memory = 4096
@@ -77,13 +74,14 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
         openstack_controller_ip: "10.1.0.2",
         openstack_network_external_device: "eth1",
         openstack_network_external_gateway: "10.1.0.2",
-        harness_deployment_crs_url: "http://localhost:56789",
-        harness_deployment_conpaas_url: "https://localhost:8443",
+        openstack_horizon_url: "http://localhost:8080",
         openstack_compute_node_ip:
           "{{ ansible_all_ipv4_addresses|ipaddr('10.1.0.0/16')|first }}",
         openstack_network_local_ip:
           "{{ ansible_all_ipv4_addresses|ipaddr('10.1.0.0/16')|first }}"
       }
     end
+
   end
+
 end
