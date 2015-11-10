@@ -1,3 +1,0 @@
----
-openstack_nova_compute_nova_docker_package: >
-  git+https://github.com/marklee77/nova-docker@harness-demo#egg=novadocker
