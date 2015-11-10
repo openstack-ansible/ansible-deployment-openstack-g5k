@@ -9,9 +9,12 @@ openstack_image_endpoint_host: "{{ openstack_controller_ip }}"
 openstack_compute_endpoint_host: "{{ openstack_controller_ip }}"
 openstack_network_endpoint_host: "{{ openstack_controller_ip }}"
 
+
 openstack_http_proxy_environment:
     http_proxy: "{{ lookup('env', 'http_proxy') }}"
+    HTTP_PROXY: "{{ lookup('env', 'http_proxy') }}"
     https_proxy: "{{ lookup('env', 'https_proxy') }}"
+    HTTPS_PROXY: "{{ lookup('env', 'https_proxy') }}"
 
 
 openstack_no_http_proxy_environment:
@@ -19,5 +22,3 @@ openstack_no_http_proxy_environment:
     HTTP_PROXY: ''
     https_proxy: ''
     HTTPS_PROXY: ''
-
-
