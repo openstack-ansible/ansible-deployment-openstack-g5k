@@ -30,11 +30,3 @@
           '{{ openstack_repository_prefix }}openstack-ansible-modules.git'
         dest: library/openstack-ansible-modules
         update: yes
-
-    - name: clone docker image repositories to local system
-      git:
-        repo: "{{ item.repo }}"
-        version: "{{ item.version }}"
-        dest: harness/{{ item.dir }}
-        update: no
-      with_items: harness_docker_build_images

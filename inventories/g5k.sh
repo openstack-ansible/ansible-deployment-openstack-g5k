@@ -6,7 +6,7 @@ if [ "$1" = "--host" ]; then
 fi
 
 [ -n "$OAR_NODE_FILE" ] && nodes=($(sort -uV $OAR_NODE_FILE))
-[ -f "harness-nodes.txt" ] && nodes=($(cat harness-nodes.txt))
+[ -f "openstack-nodes.txt" ] && nodes=($(cat harness-nodes.txt))
 
 if [ -z "$nodes" ] || [ ${#nodes[@]} -lt 2 ]; then
     echo "{}"

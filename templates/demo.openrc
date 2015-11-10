@@ -1,4 +1,4 @@
-echo "setting harness user login variables and disabling http_proxy"
+echo "setting OpenStack user login variables and disabling http_proxy"
 unset http_proxy
 unset HTTP_PROXY
 unset OS_SERVICE_TOKEN
