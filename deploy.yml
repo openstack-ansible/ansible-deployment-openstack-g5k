@@ -1,6 +1,5 @@
 ---
 - hosts: localhost
-  become: False
   sudo: False
   gather_facts: False
   tasks:
@@ -38,6 +37,7 @@
 
 - hosts: controller
   environment: openstack_no_http_proxy_environment
+  sudo: False
   vars:
     cirros_url: 
       http://download.cirros-cloud.net/0.3.4/cirros-0.3.4-x86_64-disk.img
@@ -50,8 +50,6 @@
         src: templates/admin.openrc
         dest: "{{ ansible_env.PWD }}/admin.openrc"
         mode: 0600
-        owner: "{{ ansible_ssh_user }}"
-        group: "{{ ansible_ssh_user }}"
 
     - name: create demo tenant
       keystone_user:
@@ -81,8 +79,6 @@
         src: templates/demo.openrc
         dest: "{{ ansible_env.PWD }}/demo.openrc"
         mode: 0600
-        owner: "{{ ansible_ssh_user }}"
-        group: "{{ ansible_ssh_user }}"
 
     - name: ensure that cirros image has been downloaded
       environment: openstack_http_proxy_environment
@@ -174,7 +170,6 @@
         state: present
 
     - name: create ssh keypair
-      sudo_user: "{{ ansible_ssh_user }}"
       command: ssh-keygen -q -f {{ ansible_env.PWD }}/.ssh/id_rsa -P ""
                creates={{ ansible_env.PWD }}/.ssh/id_rsa
 
@@ -250,7 +245,7 @@
       changed_when: false
 
     - name: verify that virtual machine can be logged into via ssh
-      command: ssh -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no cirros@{{ demo_floating_ip.public_ip }} hostname
+      command: ssh -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no cirros@{{ demo_floating_ip.public_ip }} /bin/true
       changed_when: false
 
     - name: print success message
