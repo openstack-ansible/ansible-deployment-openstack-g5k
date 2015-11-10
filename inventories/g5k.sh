@@ -24,7 +24,8 @@ cat <<EOF
     "controller" : {
         "hosts" : [ "${nodes[0]}" ],
         "vars"  : {
-            "ansible_ssh_user" : "root"
+            "ansible_ssh_user" : "root",
+            "openstack_horizon_url" : "http://${nodes[0]}"
         }
     },
     "network"    : {
