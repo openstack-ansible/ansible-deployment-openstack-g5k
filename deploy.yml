@@ -42,13 +42,16 @@
     cirros_url: 
       http://download.cirros-cloud.net/0.3.4/cirros-0.3.4-x86_64-disk.img
     openstack_identity_demo_password: password
+    openstack_identity_region: RegionOne
   tasks:
 
     - name: update admin.openrc from template
       template:
         src: templates/admin.openrc
         dest: "{{ ansible_env.PWD }}/admin.openrc"
+        mode: 0600
         owner: "{{ ansible_ssh_user }}"
+        group: "{{ ansible_ssh_user }}"
 
     - name: create demo tenant
       keystone_user:
@@ -78,6 +81,8 @@
         src: templates/demo.openrc
         dest: "{{ ansible_env.PWD }}/demo.openrc"
         mode: 0600
+        owner: "{{ ansible_ssh_user }}"
+        group: "{{ ansible_ssh_user }}"
 
     - name: ensure that cirros image has been downloaded
       environment: openstack_http_proxy_environment
@@ -169,6 +174,7 @@
         state: present
 
     - name: create ssh keypair
+      sudo_user: "{{ ansible_ssh_user }}"
       command: ssh-keygen -q -f {{ ansible_env.PWD }}/.ssh/id_rsa -P ""
                creates={{ ansible_env.PWD }}/.ssh/id_rsa
 
