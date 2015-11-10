@@ -1,6 +1,8 @@
 Ansible Deployment for OpenStack on grid5000
 ============================================
 
+[![DOI](https://zenodo.org/badge/7696/openstack-ansible/ansible-deployment-openstack-g5k.svg)](https://zenodo.org/badge/latestdoi/7696/openstack-ansible/ansible-deployment-openstack-g5k)
+
 The purpose of this ansible deployment is to configure and set up OpenStack on
 various target platforms, including vagrant-provisioned virtual machines and
 Grid'5000 for testing, experimentation, and demonstration.
