@@ -19,7 +19,7 @@
         - keystone
         - glance
         - nova-controller
-        - nova-compute-docker
+        - nova-compute
         - neutron-controller
         - neutron-network
         - horizon
