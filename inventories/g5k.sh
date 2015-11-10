@@ -25,7 +25,7 @@ cat <<EOF
         "hosts" : [ "${nodes[0]}" ],
         "vars"  : {
             "ansible_ssh_user" : "root",
-            "openstack_horizon_url" : "http://${nodes[0]}"
+            "openstack_horizon_url" : "http://${nodes[0]}/horizon"
         }
     },
     "network"    : {
